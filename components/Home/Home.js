@@ -55,10 +55,20 @@ class Home extends Component {
 
      GetSortOrder(prop) {  
         return function(a, b) {  
-            if(prop=='im:artist'|| prop=='im:price')  {
+            if(prop=='im:artist')  {
                 if (a[prop].label > b[prop].label) {    
                     return 1;    
                 } else if (a[prop].label < b[prop].label) {    
+                    return -1;    
+                }    
+                return 0; 
+            }
+            if(prop=='im:price')  {
+                let propA=parseFloat((a[prop].label).substring(1));
+                let propB=parseFloat((b[prop].label).substring(1));
+                if (propA > propB) {    
+                    return 1;    
+                } else if (propA < propB) {    
                     return -1;    
                 }    
                 return 0; 
@@ -120,7 +130,7 @@ class Home extends Component {
                     return (
                         <ListItem
                             key={index}
-                            title={(!isEmpty(item.title.label)?item.title.label:'')}
+                            title={(!isEmpty(item['im:artist'].label)?item['im:artist'].label:'')}
                             style={{ color : '#ffffff'}}
                             subtitle={(!isEmpty(item['im:name'].label)?item['im:name'].label:'')}
                             onPress={() => navigate('AlbumDetail', { album: (!isEmpty(item)?item:'') })}
@@ -158,7 +168,7 @@ class Home extends Component {
                     <ScrollView >
                         <View style = {{ width : '100%'}}>
                             <FlatList 
-                                data={this.state.albums.filter(album => ( ( (album.title.label.trim().toLowerCase()).includes(this.state.search.trim().toLowerCase())) || (album['im:name'].label.trim().toLowerCase().includes(this.state.search.trim().toLowerCase()))  ))}
+                                data={this.state.albums.filter(album => ( ( (album['im:artist'].label.trim().toLowerCase()).includes(this.state.search.trim().toLowerCase())) || (album['im:name'].label.trim().toLowerCase().includes(this.state.search.trim().toLowerCase()))  ))}
                                 renderItem={searchResult}
                                 keyExtractor={item => item.id?item.id.toString():''}
                                 ListEmptyComponent={emptySearchFlatList}
@@ -179,6 +189,7 @@ class Home extends Component {
                             <Picker
                                 selectedValue={this.state.sortBy}
                                 onValueChange={(itemValue, _) => {this.setState({sortBy:itemValue});this.sortByAlbum(itemValue)}}>
+                                    <Picker.Item label='Sort By' value='Sort By'/>
                                     <Picker.Item label='Price' value='Price'/>
                                     <Picker.Item label='Release date' value='Release date'/>
                                     <Picker.Item label='Artist' value='Artist'/>
